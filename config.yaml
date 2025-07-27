@@ -1,0 +1,24 @@
+server:
+  host: 0.0.0.0
+  port: 8000
+
+database:
+  host: localhost
+  port: 5432
+  username: user
+  password: pwd
+  database: users
+
+jwt:
+  secret: supersecretkey
+  accessExpiration: 3600
+  refreshExpiration: 7200
+
+rabbitmq:
+  host: localhost
+  port: 5672
+  username: user
+  password: pwd
+
+  userCreateQueue: user.create
+  userUpdateQueue: user.update

@@ -1,0 +1,32 @@
+# binari compilati
+/main
+*.exe
+*.out
+
+# directory comuni
+/vendor
+/tmp
+/.vscode
+/.idea
+
+# file temporanei
+*.log
+*.tmp
+*.swp
+*.swo
+
+# git & mod cache
+.git
+.gitignore
+
+# build locali
+dist/
+build/
+
+# test output
+coverage.*
+*.test
+
+# OS-specific
+.DS_Store
+Thumbs.db

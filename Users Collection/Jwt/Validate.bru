@@ -1,0 +1,26 @@
+meta {
+  name: Validate
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{protocol}}://{{host}}:{{port}}/api/jwt/validate
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "username": "lorenzo",
+    "password": "provaPassword"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

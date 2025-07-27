@@ -1,0 +1,35 @@
+meta {
+  name: Refresh
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{protocol}}://{{host}}:{{port}}/api/jwt/refresh
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "username": "lorenzo",
+    "password": "provaPassword"
+  }
+}
+
+script:post-response {
+  let body = res.body;
+  const access = body.access;
+  const refresh = body.refresh;
+  
+  bru.setVar("accessToken", access);
+  bru.setVar("refreshToken", refresh);
+}
+
+settings {
+  encodeUrl: true
+}

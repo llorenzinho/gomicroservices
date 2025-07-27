@@ -1,0 +1,24 @@
+meta {
+  name: Create User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{protocol}}://{{host}}:{{port}}/api/users
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "lorenzo",
+    "email": "email@prova.com",
+    "password": "provaPassword",
+    "confirmPassword": "provaPassword"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

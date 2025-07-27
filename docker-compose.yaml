@@ -1,0 +1,98 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: users
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user", "-d", "users"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq_container
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: pwd
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  n8n:
+    image: n8nio/n8n
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=adminpwd
+      - N8N_HOST=n8n.local
+      - N8N_PORT=5678
+      - GENERIC_TIMEZONE=Europe/Rome
+
+      # RabbitMQ connection (example)
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASSWORD=pwd
+
+  users-service:
+    build:
+      context: ./users  
+      dockerfile: Dockerfile
+    container_name: users-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      # Server
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: 8000
+
+      # Database
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: user
+      DATABASE_PASSWORD: pwd
+      DATABASE_DATABASE: users
+      DATABASE_SSLMODE: disable
+
+      # JWT
+      JWT_SECRET: supersecretkey
+      JWT_ACCESSEXPIRATION: 3600
+      JWT_REFRESHEXPIRATION: 720000000
+
+      # RabbitMQ
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: user
+      RABBITMQ_PASSWORD: pwd
+      RABBITMQ_USERCREATEQUEUE: user.create
+      RABBITMQ_USERUPDATEQUEUE: user.update
+
+
+volumes:
+  postgres_data:
+    driver: local
+  n8n_data:
+    driver: local

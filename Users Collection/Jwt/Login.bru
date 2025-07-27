@@ -1,0 +1,31 @@
+meta {
+  name: Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{protocol}}://{{host}}:{{port}}/api/jwt/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "lorenzo",
+    "password": "provaPassword"
+  }
+}
+
+script:post-response {
+  let body = res.body;
+  const access = body.access;
+  const refresh = body.refresh;
+  
+  bru.setVar("accessToken", access);
+  bru.setVar("refreshToken", refresh);
+}
+
+settings {
+  encodeUrl: true
+}
